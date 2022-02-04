@@ -1,0 +1,4 @@
+npm install
+sudo npm i -g quasar
+npm run dev
+
