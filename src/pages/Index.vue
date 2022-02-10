@@ -5,7 +5,7 @@
         <!-- <p class="text-center text-h6">
           Target Class Sample: {{ targetClass }}
         </p> -->
-        <p class="text-center text-h6">এই ছবি গুলির সাথে মিলিয়ে দেখুন</p>
+        <p class="text-center text-h6" style="font-weight: bold;">এই ছবি গুলির সাথে মিলিয়ে দেখুন</p>
         <div class="flex flex-center">
           <q-card
             v-for="sample in targetClassSamples"
@@ -23,7 +23,7 @@
       class="q-pa-md row items-start q-gutter-md"
     >
       <div class="q-mx-auto">
-        <p class="text-center text-h6">নিচের সমতুল্য ছবিগুলিকে বাছাই করুন</p>
+        <p class="text-center text-h6" style="font-weight: bold;">নিচের সমতুল্য ছবিগুলিকে বাছাই করুন</p>
         <div class="flex flex-center">
           <q-card
             v-for="sampleImage in dataToClassify"
@@ -47,7 +47,7 @@
                 label="Invalid"
                 color="red"
               /> -->
-              <text style="color:gray" > মিলে নাই
+              <text style="color:gray; font-weight: bold;" > মিলে নাই
               </text>
               <q-toggle
                 v-model="sampleImage.isCorrectLabel"
@@ -59,7 +59,7 @@
                 :false-value="false"
               />
 
-              <text style="color:green"> মিলেছে
+              <text style="color:green; font-weight: bold;"> মিলেছে
               </text>
             </q-card-actions>
           </q-card>
