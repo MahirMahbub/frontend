@@ -5,6 +5,7 @@
         <!-- <p class="text-center text-h6">
           Target Class Sample: {{ targetClass }}
         </p> -->
+        <p class="text-center text-h6">এই ছবি গুলির সাথে মিলিয়ে দেখুন</p>
         <div class="flex flex-center">
           <q-card
             v-for="sample in targetClassSamples"
@@ -22,7 +23,7 @@
       class="q-pa-md row items-start q-gutter-md"
     >
       <div class="q-mx-auto">
-        <p class="text-center text-h6">Images to classify:</p>
+        <p class="text-center text-h6">নিচের সমতুল্য ছবিগুলিকে বাছাই করুন</p>
         <div class="flex flex-center">
           <q-card
             v-for="sampleImage in dataToClassify"
@@ -31,7 +32,7 @@
           >
             <img :src="imageRootURL + sampleImage.url" alt="labeling image" />
             <q-card-actions align="center">
-              <q-radio
+              <!-- <q-radio
                 v-model="sampleImage.isCorrectLabel"
                 class="q-ml-md"
                 :val="true"
@@ -45,7 +46,21 @@
                 :val="false"
                 label="Invalid"
                 color="red"
+              /> -->
+              <text style="color:gray" > মিলে নাই
+              </text>
+              <q-toggle
+                v-model="sampleImage.isCorrectLabel"
+                checked-icon="check"
+                color="green"
+                unchecked-icon="clear"
+                size="70px"
+                :true-value="true"
+                :false-value="false"
               />
+
+              <text style="color:green"> মিলেছে
+              </text>
             </q-card-actions>
           </q-card>
         </div>
@@ -77,6 +92,7 @@ export default defineComponent({
     return {
       demo: false,
       targetClass: "",
+      identifier: "",
       targetClassSamples: [],
       dataToClassify: [],
       imageRootURL: "http://localhost:7003/ocr",
@@ -87,11 +103,12 @@ export default defineComponent({
   },
   methods: {
     getClassAndDataToClassify() {
-      api.get("/classification/images/?limit=16").then(({ data }) => {
+      api.get("/classification/images/?limit=8").then(({ data }) => {
         this.dataToClassify = data.images.map((i) => {
           return { ...i, isCorrectLabel: false };
         });
         this.targetClass = data.classToBeLabeled;
+        this.identifier = data.identifier;
         this.getTargetClassSamples();
       });
     },
@@ -103,25 +120,18 @@ export default defineComponent({
         });
     },
     submitSampleLabeling() {
-      let requests = this.dataToClassify
-        .filter((d) => d.isCorrectLabel)
-        .map((i) =>
-          api.patch(`/classification/image/${i.id}`, {
-            class_id: this.targetClass,
-          })
-        );
-      if (!requests.length) {
-        window.location.reload();
-      }
-      axios
-        .all(requests)
-        .then(
-          axios.spread((...responses) => {
-            // use/access the results
-            // Notify.create("positive, Label updated successfully!");
-            window.location.reload();
-          })
-        )
+      api
+        .patch(`/classification/image/${this.identifier}`, {
+          class_id: this.targetClass,
+          character_ids: this.dataToClassify
+            .filter((d) => d.isCorrectLabel)
+            .map((d) => d.id),
+        })
+        .then((res) => {
+          // use/access the results
+          // Notify.create("positive, Label updated successfully!");
+          window.location.reload();
+        })
         .catch((errors) => {
           // react on errors.
           console.error(errors);
